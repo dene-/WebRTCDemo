@@ -1,7 +1,7 @@
 export const iceServers = [
   { urls: 'stun:stun.l.google.com:19302' },
   { 
-    urls: 'turn:terminaldogma.win/turn',
+    urls: 'turn:turn.terminaldogma.win:1985',
     username: 'fulanito',
     credential: 'menganito'
   }

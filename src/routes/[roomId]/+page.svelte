@@ -79,7 +79,7 @@
 		rtcConnection.onicecandidate = (event) => {
 			if (event.candidate) {
 				// console.log(`Received candidate from ${user.username} (${user.userId})`);
-				// console.log(`Sending candidate to ${user.username} (${user.userId})`);
+				console.log(`Sending candidate to ${user.username} (${user.userId})`);
 
 				socket.send(
 					JSON.stringify({
@@ -228,7 +228,7 @@
 			username
 		};
 
-		socket = new WebSocket('ws://terminaldogma.win/ws');
+		socket = new WebSocket('wss://terminaldogma.win/ws');
 		socket.onopen = () => {
 			console.log('Connected to signaling server');
 			socket.send(
@@ -309,7 +309,7 @@
 				} else if (messageType === MESSAGE_TYPE.candidate) {
 					const { sender } = message as { sender: User };
 
-					// console.log(`Received candidate from ${sender.username} (${sender.userId})`);
+					console.log(`Received candidate from ${sender.username} (${sender.userId})`);
 
 					// Set candidate
 					const candidateConnection = rtcConnections.find((connection) => connection.id === message.connectionId);

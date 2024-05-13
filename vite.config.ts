@@ -4,6 +4,9 @@ import fs from 'fs';
 import Icons from 'unplugin-icons/vite'
 
 export default defineConfig({
+	build: {
+		target: 'esnext'
+	},
 	plugins: [sveltekit(), Icons({ compiler: 'svelte' })],
 	server: {
 		https: {

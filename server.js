@@ -6,7 +6,8 @@ const turnServer = new TurnServer({
 	authMech: 'long-term',
 	credentials: {
 		fulanito: 'menganito'
-	}
+	},
+	debugLevel: 'INFO'
 });
 turnServer.start();
 
