@@ -12,7 +12,6 @@
 
 	import { DATA_CHANNEL, MESSAGE_TYPE, iceServers } from './rtcConnection.const';
 	import type { RtcConnection, ChatMessage, User } from './rtcConnection.interfaces';
-	import type { ResolveFn } from 'vite';
 
 	let roomId = $page.params.roomId;
 	let userId: string;
@@ -229,7 +228,7 @@
 			username
 		};
 
-		socket = new WebSocket('ws://localhost:1984');
+		socket = new WebSocket('ws://terminaldogma.win/ws');
 		socket.onopen = () => {
 			console.log('Connected to signaling server');
 			socket.send(
