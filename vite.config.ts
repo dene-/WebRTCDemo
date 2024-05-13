@@ -9,6 +9,7 @@ export default defineConfig({
 		https: {
 			key: fs.readFileSync('./cert/key.pem'),
 			cert: fs.readFileSync('./cert/cert.pem')
-		}
+		},
+		proxy: {}
 	}
 });
