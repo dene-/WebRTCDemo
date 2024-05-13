@@ -26,15 +26,17 @@
 	});
 </script>
 
-<button
-	class="btn btn-secondary btn-circle {btnClasses} {isMuted
-		? 'bg-red-700 hover:bg-red-900 border-red-700 hover:border-red-900'
-		: ''}"
-	on:click={toggleMute}
->
-	{#if isMuted}
-		<MdiMicrophoneOff style="font-size: {size}" />
-	{:else}
-		<MdiMicrophone style="font-size: {size}" />
-	{/if}
-</button>
+{#if stream}
+	<button
+		class="btn btn-secondary btn-circle {btnClasses} {isMuted
+			? 'bg-red-700 hover:bg-red-900 border-red-700 hover:border-red-900'
+			: ''}"
+		on:click={toggleMute}
+	>
+		{#if isMuted}
+			<MdiMicrophoneOff style="font-size: {size}" />
+		{:else}
+			<MdiMicrophone style="font-size: {size}" />
+		{/if}
+	</button>
+{/if}

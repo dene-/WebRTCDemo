@@ -26,15 +26,17 @@
 	});
 </script>
 
-<button
-	class="btn btn-secondary btn-circle {btnClasses} {!isEnabled
-		? 'bg-red-700 hover:bg-red-900 border-red-700 hover:border-red-900'
-		: ''}"
-	on:click={toggleMute}
->
-	{#if isEnabled}
-		<MdiVideo style="font-size: {size}" />
-	{:else}
-		<MdiVideoOff style="font-size: {size}" />
-	{/if}
-</button>
+{#if stream}
+	<button
+		class="btn btn-secondary btn-circle {btnClasses} {!isEnabled
+			? 'bg-red-700 hover:bg-red-900 border-red-700 hover:border-red-900'
+			: ''}"
+		on:click={toggleMute}
+	>
+		{#if isEnabled}
+			<MdiVideo style="font-size: {size}" />
+		{:else}
+			<MdiVideoOff style="font-size: {size}" />
+		{/if}
+	</button>
+{/if}
