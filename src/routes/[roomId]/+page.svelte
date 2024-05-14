@@ -183,13 +183,18 @@
 			username = '';
 		}
 
-		localStream = await navigator.mediaDevices.getUserMedia({
-			video: {
-				width: { max: 640 },
-				height: { max: 480 }
-			},
-			audio: true
-		});
+		try {
+			localStream = await navigator.mediaDevices.getUserMedia({
+				video: {
+					width: { max: 640 },
+					height: { max: 480 }
+				},
+				audio: true
+			});
+		} catch (err) {
+			console.log(err);
+			localStream = new MediaStream();
+		}
 
 		setLocalVideoStream();
 
@@ -200,27 +205,7 @@
 
 		await new Promise((resolve) => (canEnterRoomResolve = resolve));
 
-		if (!username || username === 'undefined') {
-			const { value: writtenUsername } = await Swal.fire({
-				title: 'Enter your username!',
-				input: 'text',
-				inputLabel: 'Username...',
-				showCancelButton: false,
-				allowOutsideClick: false,
-				heightAuto: false,
-				inputValidator: (value) => {
-					if (!value) {
-						return 'You need to write something!';
-					}
-				}
-			});
-			username = writtenUsername;
-			localStorage.username = writtenUsername;
-		}
-
 		console.log(`User ID: ${userId}`);
-
-		//userId = uuid();
 
 		const user: User = {
 			roomId,
@@ -243,91 +228,87 @@
 			const message = JSON.parse(event.data);
 			const messageType = message.type;
 
-			try {
-				if (messageType === MESSAGE_TYPE.connect) {
-					const { users } = message as { users: User[] };
+			if (messageType === MESSAGE_TYPE.connect) {
+				const { users } = message as { users: User[] };
 
-					console.log(`Connected to room: ${roomId}`);
+				console.log(`Connected to room: ${roomId}`);
 
-					if (users.length) {
-						console.log(`Users in room: ${message.users.length}`);
+				if (users.length) {
+					console.log(`Users in room: ${message.users.length}`);
 
-						// Create a new connection for each user
-						users.forEach(async (roomUser: User) => {
-							const connection = createConnection(roomUser);
+					// Create a new connection for each user
+					users.forEach(async (roomUser: User) => {
+						const connection = createConnection(roomUser);
 
-							const offer = await connection.connection.createOffer();
-							await connection.connection.setLocalDescription(offer);
+						const offer = await connection.connection.createOffer();
+						await connection.connection.setLocalDescription(offer);
 
-							// Send offer to room user
-							console.log(`Sending offer to ${roomUser.username} (${roomUser.userId})`);
+						// Send offer to room user
+						console.log(`Sending offer to ${roomUser.username} (${roomUser.userId})`);
 
-							socket.send(
-								JSON.stringify({
-									type: 'offer',
-									receiver: roomUser,
-									sender: user,
-									connectionId: connection.id,
-									offer
-								})
-							);
-						});
-					}
-				} else if (messageType === MESSAGE_TYPE.offer) {
-					const { sender, receiver } = message as { sender: User; receiver: User };
-
-					console.log(`Received offer from ${sender.username} (${sender.userId})`);
-
-					// Create connection for the sender user of the offer
-					const newConnection = createConnection(sender, message.connectionId);
-
-					newConnection.connection.setRemoteDescription(message.offer as RTCSessionDescriptionInit);
-					const answer = await newConnection.connection.createAnswer();
-					await newConnection.connection.setLocalDescription(answer);
-
-					console.log(`Sending answer to ${sender.username} (${sender.userId})`);
-
-					socket.send(
-						JSON.stringify({
-							type: 'answer',
-							sender: receiver,
-							receiver: sender,
-							connectionId: message.connectionId,
-							answer
-						})
-					);
-				} else if (messageType === MESSAGE_TYPE.answer) {
-					const { sender } = message as { sender: User; receiver: User };
-
-					console.log(`Received answer from ${sender.username} (${sender.userId})`);
-
-					const answerConnection = rtcConnections.find((connection) => connection.id === message.connectionId);
-
-					if (answerConnection) {
-						await answerConnection.connection.setRemoteDescription(message.answer as RTCSessionDescriptionInit);
-					}
-				} else if (messageType === MESSAGE_TYPE.candidate) {
-					const { sender } = message as { sender: User };
-
-					console.log(`Received candidate from ${sender.username} (${sender.userId})`);
-
-					// Set candidate
-					const candidateConnection = rtcConnections.find((connection) => connection.id === message.connectionId);
-
-					if (candidateConnection) {
-						await candidateConnection.connection.addIceCandidate(message.candidate);
-						rtcConnections = rtcConnections;
-					}
-				} else if (messageType === MESSAGE_TYPE.disconnect) {
-					console.log(`User disconnected: ${message.userId}`);
-
-					const rtcConnection = rtcConnections.find((connection) => connection.user.userId === message.userId);
-					rtcConnection?.connection.close();
-
-					rtcConnections = [...rtcConnections];
+						socket.send(
+							JSON.stringify({
+								type: 'offer',
+								receiver: roomUser,
+								sender: user,
+								connectionId: connection.id,
+								offer
+							})
+						);
+					});
 				}
-			} catch (error) {
-				console.error(error);
+			} else if (messageType === MESSAGE_TYPE.offer) {
+				const { sender, receiver } = message as { sender: User; receiver: User };
+
+				console.log(`Received offer from ${sender.username} (${sender.userId})`);
+
+				// Create connection for the sender user of the offer
+				const newConnection = createConnection(sender, message.connectionId);
+
+				newConnection.connection.setRemoteDescription(message.offer as RTCSessionDescriptionInit);
+				const answer = await newConnection.connection.createAnswer();
+				await newConnection.connection.setLocalDescription(answer);
+
+				console.log(`Sending answer to ${sender.username} (${sender.userId})`);
+
+				socket.send(
+					JSON.stringify({
+						type: 'answer',
+						sender: receiver,
+						receiver: sender,
+						connectionId: message.connectionId,
+						answer
+					})
+				);
+			} else if (messageType === MESSAGE_TYPE.answer) {
+				const { sender } = message as { sender: User; receiver: User };
+
+				console.log(`Received answer from ${sender.username} (${sender.userId})`);
+
+				const answerConnection = rtcConnections.find((connection) => connection.id === message.connectionId);
+
+				if (answerConnection) {
+					await answerConnection.connection.setRemoteDescription(message.answer as RTCSessionDescriptionInit);
+				}
+			} else if (messageType === MESSAGE_TYPE.candidate) {
+				const { sender } = message as { sender: User };
+
+				console.log(`Received candidate from ${sender.username} (${sender.userId})`);
+
+				// Set candidate
+				const candidateConnection = rtcConnections.find((connection) => connection.id === message.connectionId);
+
+				if (candidateConnection) {
+					await candidateConnection.connection.addIceCandidate(message.candidate);
+					rtcConnections = rtcConnections;
+				}
+			} else if (messageType === MESSAGE_TYPE.disconnect) {
+				console.log(`User disconnected: ${message.userId}`);
+
+				const rtcConnection = rtcConnections.find((connection) => connection.user.userId === message.userId);
+				rtcConnection?.connection.close();
+
+				rtcConnections = [...rtcConnections];
 			}
 		};
 	});
