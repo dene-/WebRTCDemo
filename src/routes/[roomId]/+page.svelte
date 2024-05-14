@@ -66,6 +66,9 @@
 				await tick();
 
 				const remoteVideo = document.getElementById(`remoteVideo-${user.userId}`) as HTMLVideoElement;
+				if (remoteStreams[connection.id].stream) {
+					remoteVideo.classList.remove('hidden');
+				}
 				remoteVideo.srcObject = remoteStreams[connection.id].stream;
 			}
 		};
@@ -426,7 +429,7 @@
 									</div>
 								</div>
 								<div class="camera-feed">
-									<video id={`remoteVideo-${connection.user.userId}`} class="rounded-xl" autoplay playsinline>
+									<video id={`remoteVideo-${connection.user.userId}`} class="rounded-xl hidden" autoplay playsinline>
 										<track kind="captions" />
 									</video>
 								</div>
