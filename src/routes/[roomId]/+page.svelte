@@ -430,7 +430,7 @@
 									</div>
 								</div>
 								<div class="camera-feed">
-									<video id={`remoteVideo-${connection.user.userId}`} class="rounded-xl hidden" autoplay playsinline>
+									<video id={`remoteVideo-${connection.user.userId}`} class="rounded-xl" autoplay playsinline>
 										<track kind="captions" />
 									</video>
 								</div>

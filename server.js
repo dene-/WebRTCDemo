@@ -1,15 +1,4 @@
 import { WebSocketServer } from 'ws';
-import TurnServer from 'node-turn';
-
-const turnServer = new TurnServer({
-	listeningPort: 1985,
-	authMech: 'long-term',
-	credentials: {
-		fulanito: 'menganito'
-	},
-	debugLevel: 'INFO'
-});
-turnServer.start();
 
 const wss = new WebSocketServer({ port: 1984 });
 
