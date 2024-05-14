@@ -404,12 +404,9 @@
 						bind:value={chatInput}
 						maxlength="30"
 						autocomplete="off"
-					/>
-					<button
-						class="btn rounded-xl min-w-[100px]"
 						on:keypress={(e) => e.key === 'Enter' && sendChat}
-						on:click={sendChat}>Send</button
-					>
+					/>
+					<button class="btn rounded-xl min-w-[100px]" on:click={sendChat}>Send</button>
 				</div>
 			</div>
 		</div>
