@@ -73,7 +73,7 @@
 				}
 				remoteVideo.srcObject = remoteStreams[connection.id].stream;
 			} else {
-				console.log(`Connection state changed with ${user.username} ${rtcConnection.connectionState}`);
+				console.log(`Connection state changed with ${user.username} ${rtcConnection.connectionState}`, rtcConnection);
 			}
 		};
 
