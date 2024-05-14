@@ -66,9 +66,10 @@
 				await tick();
 
 				const remoteVideo = document.getElementById(`remoteVideo-${user.userId}`) as HTMLVideoElement;
-				console.log(remoteStreams[connection.id].stream);
-				if (remoteStreams[connection.id].stream) {
+				if (remoteStreams[connection.id].stream.active) {
 					remoteVideo.classList.remove('hidden');
+				} else {
+					remoteVideo.classList.add('hidden');
 				}
 				remoteVideo.srcObject = remoteStreams[connection.id].stream;
 			}
